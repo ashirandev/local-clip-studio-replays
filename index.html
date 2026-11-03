@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Clip Studio Devlog</title>
+<meta name="description" content="Six real takes of Local Clip Studio, uncut: every step Muse took, at its time in the video, with a replay of the same run.">
+<style>
+:root {
+  --bg: #F0F2F5;
+  --surface: #FFFFFF;
+  --text: #1C1E21;
+  --muted: #65676B;
+  --line: #DADDE1;
+  --think: #0057D6;
+  --see: #6A4BC4;
+  --make: #8A5A00;
+  --you: #E7F0FF;
+  --on-accent: #FFFFFF;
+  --warn: #8A4B00;
+  --shade: rgb(0 0 0 / 0.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171A;
+    --surface: #1D2025;
+    --text: #E4E6EA;
+    --muted: #A0A8B3;
+    --line: #2C3036;
+    --think: #5B9BFF;
+    --see: #CDBBFF;
+    --make: #FFD27A;
+    --you: #22324D;
+    --on-accent: #0E1420;
+    --warn: #F0A856;
+    --shade: rgb(0 0 0 / 0.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171A;
+  --surface: #1D2025;
+  --text: #E4E6EA;
+  --muted: #A0A8B3;
+  --line: #2C3036;
+  --think: #5B9BFF;
+  --see: #CDBBFF;
+  --make: #FFD27A;
+  --you: #22324D;
+  --on-accent: #0E1420;
+  --warn: #F0A856;
+  --shade: rgb(0 0 0 / 0.3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, "Segoe UI", "Noto Sans Thai", "Leelawadee UI", sans-serif;
+}
+a { color: var(--think); }
+:focus-visible { outline: 2px solid var(--think); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 16px; }
+.top { display: flex; align-items: center; gap: 10px; padding: 18px 0 0; color: var(--muted); font-size: 14px; }
+.top b { color: var(--text); font-weight: 650; }
+.top nav { margin-left: auto; display: flex; gap: 14px; }
+.top nav a[aria-current="page"] { color: var(--text); font-weight: 650; text-decoration: none; }
+.mark { width: 22px; height: 22px; border-radius: 6px; background: var(--think); display: grid; place-items: center; }
+.mark i { width: 0; height: 0; border-left: 8px solid var(--on-accent); border-top: 5px solid transparent; border-bottom: 5px solid transparent; margin-left: 2px; }
+.intro { padding: 28px 0 24px; max-width: 70ch; }
+.intro h1 { margin: 0 0 10px; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+.legend span b { font-weight: 650; }
+.think { color: var(--think); }
+.see { color: var(--see); }
+.make { color: var(--make); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding-bottom: 48px; }
+.grid > * { min-width: 0; }
+.stage { position: sticky; top: 0; z-index: 3; background: var(--bg); padding: 8px 0 10px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+.frame { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 24px var(--shade); }
+.frame iframe, .frame #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.now { display: flex; gap: 10px; align-items: baseline; margin: 10px 2px 0; font-size: 14px; color: var(--muted); min-height: 21px; }
+.now .mono { color: var(--text); }
+.tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: thin; }
+.tab { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; line-height: 1.3; cursor: pointer; text-align: left; }
+.tab small { color: var(--muted); font-size: 12px; }
+.tab[aria-selected="true"] { border-color: var(--think); box-shadow: inset 0 0 0 1px var(--think); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.card h2 { margin: 0 0 4px; font-size: 22px; line-height: 1.25; text-wrap: balance; }
+.facts { margin: 0; color: var(--muted); font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.chips li { padding: 2px 9px; border: 1px solid currentColor; border-radius: 999px; font-size: 13px; }
+.cost { margin: 12px 0 0; font-size: 14px; }
+.cost b { font-weight: 650; }
+.go { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 8px 14px; border-radius: 8px; background: var(--think); color: var(--on-accent); font-weight: 600; font-size: 14px; text-decoration: none; }
+.go[aria-disabled="true"] { background: transparent; color: var(--muted); border: 1px dashed var(--line); font-weight: 500; }
+.notes { margin: 14px 0 0; padding: 12px 14px; border-left: 3px solid var(--warn); background: var(--bg); border-radius: 0 8px 8px 0; font-size: 14px; }
+.notes h3 { margin: 0 0 6px; font-size: 14px; color: var(--warn); }
+.notes ul { margin: 0; padding-left: 18px; }
+.notes p { margin: 8px 0 0; color: var(--muted); }
+.list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.row { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 4px 10px; align-items: start; padding: 8px 8px; border-radius: 8px; }
+.row[aria-current="true"] { background: var(--surface); box-shadow: inset 3px 0 0 var(--think); }
+.at { padding: 2px 6px; border: 0; border-radius: 6px; background: transparent; color: var(--think); font: inherit; font-size: 14px; cursor: pointer; text-align: left; }
+.at:hover { background: var(--surface); }
+.what { min-width: 0; }
+.what b { font-weight: 600; }
+.what .x { color: var(--muted); font-weight: 500; }
+.ran { display: block; font-size: 13px; color: var(--muted); }
+.ran span + span::before { content: "\00b7"; margin: 0 6px; color: var(--muted); }
+.said { display: block; margin-top: 4px; padding: 6px 10px; border-radius: 10px; background: var(--you); color: var(--text); font-size: 14px; overflow-wrap: anywhere; }
+.row.person .what b { color: var(--muted); font-weight: 600; font-size: 14px; }
+.rep { font-size: 13px; white-space: nowrap; padding-top: 3px; }
+.foot { padding: 24px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.foot p { margin: 0 0 6px; max-width: 70ch; }
+@media (min-width: 1000px) {
+  .grid { grid-template-columns: minmax(0, 1.4fr) minmax(380px, 1fr); align-items: start; }
+  .stage { top: 16px; margin: 0; padding: 0; border-radius: 12px; }
+}
+@media (max-width: 520px) {
+  .row { grid-template-columns: 64px minmax(0, 1fr); }
+  .rep { grid-column: 2; padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="mark" aria-hidden="true"><i></i></span><b>Local Clip Studio</b><nav aria-label="Pages"><a href="index.html" aria-current="page">Six takes</a><a href="models.html">Models</a></nav></header>
+  <section class="intro">
+    <h1>Six real takes, start to finish</h1>
+    <p>Recorded on one PC on 3 Nov 2026 and joined with no edits. Each take starts with one line typed to Muse and ends with a clip handed over. Pick a time to jump the video there. Open a step's replay to see the same run in the studio, with what Muse was thinking at that step.</p>
+    <div class="legend" aria-label="Model colors"><span><b class="think">Blue</b> thinks</span><span><b class="see">Lilac</b> sees and hears</span><span><b class="make">Amber</b> makes</span></div>
+  </section>
+  <main class="grid">
+    <div class="stage">
+      <div class="frame"><div id="player"></div></div>
+      <p class="now" aria-live="polite"><span class="mono" id="now-t">0:00</span><span id="now-what"></span></p>
+    </div>
+    <div>
+      <div class="tabs" role="tablist" aria-label="Takes" id="tabs"></div>
+      <section id="panel" role="tabpanel"></section>
+    </div>
+  </main>
+  <footer class="foot">
+    <p>The video is the six OBS recordings joined with no re-encode, 1080p60. The step times come from the studio's own chat logs, mapped onto the video by each recording's clock.</p>
+    <p id="yt"></p>
+  </footer>
+</div>
+<script src="data.js"></script>
+<script>
+(() => {
+  const D = window.DEVLOG;
+  const ROLE = { "Muse Spark": "think", "Muse Spark Open": "think", "Muse Glimmer": "think", "Muse Wonder": "see", "Muse Voice Transcribe": "see", "SAM 3.1": "see", "Muse Image": "make" };
+  const SHORT = (m) => m.replace(/^Muse /, "");
+  const clock = (s) => {
+    s = Math.max(0, Math.round(s));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    const p = (n) => String(n).padStart(2, "0");
+    return h ? h + ":" + p(m) + ":" + p(x) : m + ":" + p(x);
+  };
+  const el = (tag, cls, text) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  };
+  const install = { name: "Install with one setup.bat", short: "Install", start: 0, end: D.takes[0].start, steps: [], asks: [], models: [], notes: [], pack: null, install: true };
+  const SHORTS = { "20261103-084524-7163": "Ray-Ban trip", "20261103-095357-480d": "Talk show", "20261103-102238-4c1d": "Sifu stream", "20261103-122209-55b6": "Selling", "20261103-130922-c73c": "Product review", "20261103-140443-7c21": "Vlog" };
+  const takes = [install].concat(D.takes.map((t) => Object.assign({ short: SHORTS[t.chat] || t.name }, t)));
+  const replay = (t, n) => "replay/" + t.pack + "/" + (n ? "#step=" + n : "");
+  const ytLink = (s) => "https://youtu.be/" + D.video + (s ? "?t=" + Math.floor(s) : "");
+  document.getElementById("yt").innerHTML = "";
+  const a = el("a", "", "Watch on YouTube");
+  a.href = ytLink(0);
+  document.getElementById("yt").append(a);
+
+  let player = null;
+  let shown = -1;
+  let rows = [];
+  const seek = (s) => {
+    if (player && player.seekTo) {
+      player.seekTo(s, true);
+      player.playVideo();
+      tick(s);
+    } else {
+      window.open(ytLink(s), "_blank", "noopener");
+    }
+  };
+  const which = (s) => {
+    for (let i = takes.length - 1; i >= 0; i -= 1) if (s >= takes[i].start) return i;
+    return 0;
+  };
+
+  const groups = (t) => {
+    const out = [];
+    t.steps.forEach((s) => {
+      const last = out[out.length - 1];
+      if (last && last.kind === "step" && last.title === s.title) {
+        last.count += 1;
+        s.ran.forEach((m) => { if (last.ran.indexOf(m) < 0) last.ran.push(m); });
+      } else {
+        out.push({ kind: "step", t: s.t, title: s.title, n: s.n, count: 1, ran: s.ran.slice() });
+      }
+    });
+    t.asks.forEach((p, i) => {
+      const label = p.tapped ? "A tap on a moment card" : p.cut_in ? "A message while Muse works" : i === 0 ? "The ask" : "A message";
+      out.push({ kind: "person", t: p.t, title: label, text: p.text.replace(/^\(tapped\)\s*/, "") });
+    });
+    return out.sort((x, y) => x.t - y.t || (x.kind === "person" ? -1 : 1));
+  };
+
+  const tabsBox = document.getElementById("tabs");
+  const tabs = takes.map((t, i) => {
+    const b = el("button", "tab");
+    b.type = "button";
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", "false");
+    b.append(el("span", "", t.short), el("small", "mono", clock(t.start)));
+    b.addEventListener("click", () => { show(i); seek(t.start); });
+    tabsBox.append(b);
+    return b;
+  });
+
+  const panel = document.getElementById("panel");
+  const show = (i) => {
+    if (i === shown) return;
+    shown = i;
+    tabs.forEach((b, j) => b.setAttribute("aria-selected", String(j === i)));
+    tabs[i].scrollIntoView({ block: "nearest", inline: "nearest" });
+    const t = takes[i];
+    panel.textContent = "";
+    const card = el("div", "card");
+    card.append(el("h2", "", t.name));
+    const steps = t.steps.length;
+    card.append(el("p", "facts", "Starts " + clock(t.start) + " · " + clock(t.end - t.start) + " long" + (steps ? " · " + steps + " steps" : "")));
+    if (t.install) {
+      card.append(el("p", "cost", "From an empty folder: one setup.bat sets up the studio, then it opens in the browser."));
+    }
+    if (t.models.length) {
+      const ul = el("ul", "chips");
+      ul.setAttribute("aria-label", "Models that ran");
+      t.models.forEach((m) => ul.append(el("li", ROLE[m], m)));
+      card.append(ul);
+      const c = el("p", "cost");
+      const local = t.models.indexOf("Muse Glimmer") >= 0;
+      c.innerHTML = "";
+      c.append("Cloud cost: ", el("b", "", "Meta $" + t.meta_usd.toFixed(2)), ", ", el("b", "", "Baseten $" + t.baseten_usd.toFixed(2)), local ? ". Muse Glimmer ran on this computer." : ".");
+      card.append(c);
+    }
+    if (!t.install) {
+      const go = el("a", "go", t.pack ? "Open the replay" : "Video only, no replay");
+      if (t.pack) { go.href = replay(t, 0); go.target = "_blank"; go.rel = "noopener"; } else { go.setAttribute("aria-disabled", "true"); }
+      card.append(go);
+    }
+    if (t.notes.length) {
+      const n = el("div", "notes");
+      n.append(el("h3", "", "What went wrong on camera"));
+      const ul = el("ul");
+      t.notes.forEach((x) => ul.append(el("li", "", x)));
+      n.append(ul, el("p", "", D.notes_status));
+      card.append(n);
+    }
+    panel.append(card);
+    const list = el("ol", "list");
+    rows = groups(t).map((g) => {
+      const li = el("li", "row" + (g.kind === "person" ? " person" : ""));
+      li.dataset.t = g.t;
+      const at = el("button", "at mono", clock(g.t));
+      at.type = "button";
+      at.setAttribute("aria-label", "Play from " + clock(g.t));
+      at.addEventListener("click", () => seek(g.t));
+      const what = el("div", "what");
+      const b = el("b", "", g.title);
+      if (g.count > 1) b.append(" ", el("span", "x", "×" + g.count));
+      what.append(b);
+      if (g.kind === "person") {
+        what.append(el("span", "said", g.text));
+      } else if (g.ran.length) {
+        const r = el("span", "ran");
+        g.ran.forEach((m) => r.append(el("span", ROLE[m], SHORT(m))));
+        what.append(r);
+      }
+      li.append(at, what);
+      if (g.kind === "step" && t.pack) {
+        const rep = el("a", "rep", "Replay, step " + g.n + (g.count > 1 ? "–" + (g.n + g.count - 1) : ""));
+        rep.href = replay(t, g.n);
+        rep.target = "_blank";
+        rep.rel = "noopener";
+        li.append(rep);
+      } else {
+        li.append(el("span"));
+      }
+      list.append(li);
+      return li;
+    });
+    panel.append(list);
+  };
+
+  const nowT = document.getElementById("now-t"), nowWhat = document.getElementById("now-what");
+  let lastRow = null;
+  const tick = (s) => {
+    const i = which(s);
+    show(i);
+    nowT.textContent = clock(s);
+    let cur = null;
+    rows.forEach((r) => { if (Number(r.dataset.t) <= s) cur = r; });
+    if (cur !== lastRow) {
+      if (lastRow) lastRow.removeAttribute("aria-current");
+      if (cur) cur.setAttribute("aria-current", "true");
+      lastRow = cur;
+    }
+    const label = cur ? cur.querySelector(".what b").textContent : "";
+    nowWhat.textContent = takes[i].short + (label ? " · " + label : "");
+  };
+
+  show(0);
+  tick(0);
+
+  window.onYouTubeIframeAPIReady = () => {
+    player = new YT.Player("player", {
+      host: "https://www.youtube-nocookie.com",
+      videoId: D.video,
+      playerVars: { rel: 0, playsinline: 1 },
+      events: {
+        onReady: () => {
+          setInterval(() => {
+            if (player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) tick(player.getCurrentTime());
+          }, 500);
+        }
+      }
+    });
+  };
+  const s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = () => {
+    const f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + D.video + "?rel=0";
+    f.title = "Local Clip Studio devlog";
+    f.allow = "encrypted-media; picture-in-picture; fullscreen";
+    document.getElementById("player").replaceWith(f);
+  };
+  document.head.append(s);
+})();
+</script>
+</body>
+</html>

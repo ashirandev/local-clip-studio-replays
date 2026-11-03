@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Clip Studio Models</title>
+<meta name="description" content="Six real videos and the seven Meta models that worked on them: pick a video to see its models, or a model to see its videos.">
+<style>
+:root {
+  --bg: #F0F2F5;
+  --surface: #FFFFFF;
+  --text: #1C1E21;
+  --muted: #65676B;
+  --line: #DADDE1;
+  --think: #0057D6;
+  --see: #6A4BC4;
+  --make: #8A5A00;
+  --local: #1A7F37;
+  --on-accent: #FFFFFF;
+  --shade: rgb(0 0 0 / 0.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171A;
+    --surface: #1D2025;
+    --text: #E4E6EA;
+    --muted: #A0A8B3;
+    --line: #2C3036;
+    --think: #5B9BFF;
+    --see: #CDBBFF;
+    --make: #FFD27A;
+    --local: #6FD08C;
+    --on-accent: #0E1420;
+    --shade: rgb(0 0 0 / 0.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171A;
+  --surface: #1D2025;
+  --text: #E4E6EA;
+  --muted: #A0A8B3;
+  --line: #2C3036;
+  --think: #5B9BFF;
+  --see: #CDBBFF;
+  --make: #FFD27A;
+  --local: #6FD08C;
+  --on-accent: #0E1420;
+  --shade: rgb(0 0 0 / 0.3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, "Segoe UI", "Noto Sans Thai", "Leelawadee UI", sans-serif;
+}
+a { color: var(--think); }
+:focus-visible { outline: 2px solid var(--think); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 16px; }
+.top { display: flex; align-items: center; gap: 10px; padding: 18px 0 0; color: var(--muted); font-size: 14px; }
+.top b { color: var(--text); font-weight: 650; }
+.top nav { margin-left: auto; display: flex; gap: 14px; }
+.top nav a[aria-current="page"] { color: var(--text); font-weight: 650; text-decoration: none; }
+.mark { width: 22px; height: 22px; border-radius: 6px; background: var(--think); display: grid; place-items: center; }
+.mark i { width: 0; height: 0; border-left: 8px solid var(--on-accent); border-top: 5px solid transparent; border-bottom: 5px solid transparent; margin-left: 2px; }
+.intro { padding: 28px 0 20px; max-width: 70ch; }
+.intro h1 { margin: 0 0 10px; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+.legend b { font-weight: 650; }
+.think { color: var(--think); }
+.see { color: var(--see); }
+.make { color: var(--make); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding-bottom: 48px; }
+.grid > * { min-width: 0; }
+.map { position: relative; display: grid; grid-template-columns: minmax(150px, 0.9fr) minmax(70px, 0.9fr) minmax(300px, 1.4fr); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 16px; }
+.col { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+.col h2 { margin: 0 0 2px; font-size: 14px; font-weight: 650; color: var(--muted); letter-spacing: 0.02em; }
+.clips { align-items: flex-end; text-align: right; grid-column: 1; }
+.models { align-items: flex-start; grid-column: 3; }
+.clip, .model { font: inherit; cursor: pointer; border-radius: 10px; line-height: 1.25; }
+.clip { padding: 8px 10px; border: 1px solid transparent; background: transparent; color: var(--muted); font-size: 16px; text-align: right; }
+.clip:hover { color: var(--text); }
+.clip.lit { color: var(--text); font-weight: 650; }
+.clip[aria-pressed="true"] { color: var(--text); font-weight: 650; border-color: var(--think); background: var(--bg); }
+.mrow { display: flex; align-items: center; gap: 8px; }
+.model { padding: 7px 12px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 16px; text-align: left; }
+.model:hover { color: var(--text); border-color: var(--muted); }
+.model.lit { color: var(--on-accent); border-color: transparent; font-weight: 600; }
+.model.lit.think { background: var(--think); }
+.model.lit.see { background: var(--see); }
+.model.lit.make { background: var(--make); }
+.model[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); }
+.where { font-size: 13px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.where.here { color: var(--local); border-color: var(--local); font-weight: 600; }
+svg.lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+svg.lines path { fill: none; stroke: var(--line); stroke-width: 1.5; opacity: 0.9; transition: stroke-width 0.2s, opacity 0.2s; }
+svg.lines path.on { stroke-width: 3; opacity: 1; }
+svg.lines path.on.think { stroke: var(--think); }
+svg.lines path.on.see { stroke: var(--see); }
+svg.lines path.on.make { stroke: var(--make); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.card h2 { margin: 0 0 4px; font-size: 22px; line-height: 1.25; text-wrap: balance; }
+.facts { margin: 0; color: var(--muted); font-size: 14px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0 0; }
+.stat { background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+.stat small { display: block; color: var(--muted); font-size: 13px; line-height: 1.3; }
+.stat b { display: block; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
+.does { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.does li { display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.does i { width: 10px; height: 10px; border-radius: 50%; background: currentColor; transform: translateY(1px); }
+.does b { font-weight: 650; color: var(--text); }
+.does span { color: var(--muted); font-size: 14px; }
+.does button { font: inherit; padding: 0; border: 0; background: none; color: var(--think); cursor: pointer; text-align: left; font-weight: 650; }
+.cost { margin: 14px 0 0; font-size: 14px; }
+.cost b { font-weight: 650; }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.go { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; background: var(--think); color: var(--on-accent); font-weight: 600; font-size: 14px; text-decoration: none; }
+.go.ghost { background: transparent; color: var(--think); border: 1px solid var(--line); }
+.go[aria-disabled="true"] { background: transparent; color: var(--muted); border: 1px dashed var(--line); font-weight: 500; }
+.foot { padding: 24px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.foot p { margin: 0 0 6px; max-width: 70ch; }
+@media (min-width: 1100px) {
+  .grid { grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr); align-items: start; }
+  .card { position: sticky; top: 16px; }
+}
+@media (max-width: 719px) {
+  .map { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .clips, .models { grid-column: 1; align-items: stretch; text-align: left; }
+  .clips { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .clips h2, .models h2 { flex-basis: 100%; }
+  .clip { text-align: left; border-color: var(--line); padding: 6px 10px; font-size: 15px; }
+  .models { gap: 8px; }
+  svg.lines { display: none; }
+  .stats { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  svg.lines path { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><span class="mark" aria-hidden="true"><i></i></span><b>Local Clip Studio</b><nav aria-label="Pages"><a href="index.html">Six takes</a><a href="models.html" aria-current="page">Models</a></nav></header>
+  <section class="intro">
+    <h1>Six videos, seven Meta models</h1>
+    <p>These are the six real takes from 3 Nov 2026. Pick a video to see which models worked on it, or pick a model to see where it worked. Each line is a model that answered in that run.</p>
+    <div class="legend" aria-label="Model colors"><span><b class="think">Blue</b> thinks</span><span><b class="see">Lilac</b> sees and hears</span><span><b class="make">Amber</b> makes</span></div>
+  </section>
+  <main class="grid">
+    <div class="map" id="map">
+      <svg class="lines" id="lines" aria-hidden="true"></svg>
+      <div class="col clips" id="clips"><h2>6 videos</h2></div>
+      <div class="col models" id="models"><h2>7 Meta models</h2></div>
+    </div>
+    <section class="card" id="card" aria-live="polite"></section>
+  </main>
+  <footer class="foot">
+    <p>Which models ran, and what each run cost, come from the studio's own records of each run. Muse Glimmer runs on the same computer as the studio, so it costs nothing per call.</p>
+  </footer>
+</div>
+<script src="data.js"></script>
+<script>
+(() => {
+  const D = window.DEVLOG;
+  const MODELS = [
+    { name: "Muse Glimmer", role: "think", where: "On this computer", here: true, does: "The editor. It plans the job, calls the editing tools one at a time with a reason for each, reads every refusal and fixes its call, and looks at frames. Meta's open-weight model, run by llama.cpp on one 16 GB graphics card." },
+    { name: "Muse Spark", role: "think", where: "Meta Model API", does: "The same editor in Meta's cloud, for a computer without a graphics card." },
+    { name: "Muse Spark Open", role: "think", where: "Baseten", does: "The open-weight Spark on Baseten's API: the same editor again." },
+    { name: "Muse Wonder", role: "see", where: "Meta Model API", does: "Watches short pieces with their sound, to find the laughs and the quiet moments." },
+    { name: "Muse Voice Transcribe", role: "see", where: "Meta Model API", does: "Hears what is said, in pieces of 10 seconds or less, so every caption word stays near its time." },
+    { name: "SAM 3.1", role: "see", where: "Meta Model API", does: "Finds the people frame by frame, so words and titles can sit behind them." },
+    { name: "Muse Image", role: "make", where: "Meta Model API", does: "Makes the cover." }
+  ];
+  const ORDER = [
+    ["20261103-102238-4c1d", "Game stream"],
+    ["20261103-122209-55b6", "Selling video"],
+    ["20261103-084524-7163", "Ray-Ban Meta glasses trip"],
+    ["20261103-095357-480d", "Talk show"],
+    ["20261103-140443-7c21", "Vlog"],
+    ["20261103-130922-c73c", "Product review"]
+  ];
+  const STREAM = { chat: "20261103-102238-4c1d", hand: "4:02:53", studio: "12 min", cloud: "$0.08" };
+  const byChat = {};
+  D.takes.forEach((t) => { byChat[t.chat] = t; });
+  const clips = ORDER.map(([chat, label]) => Object.assign({ label }, byChat[chat])).filter((c) => c.chat);
+  const byName = {};
+  MODELS.forEach((m) => { byName[m.name] = m; });
+
+  const clock = (s) => {
+    s = Math.max(0, Math.round(s));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    const p = (n) => String(n).padStart(2, "0");
+    return h ? h + ":" + p(m) + ":" + p(x) : m + ":" + p(x);
+  };
+  const el = (tag, cls, text) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  };
+
+  const map = document.getElementById("map");
+  const svg = document.getElementById("lines");
+  const clipBox = document.getElementById("clips");
+  const modelBox = document.getElementById("models");
+  const card = document.getElementById("card");
+  let pick = { kind: "clip", chat: STREAM.chat };
+
+  clips.forEach((c) => {
+    const b = el("button", "clip", c.label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => choose({ kind: "clip", chat: c.chat }));
+    c.e = b;
+    clipBox.append(b);
+  });
+  MODELS.forEach((m) => {
+    const row = el("div", "mrow");
+    const b = el("button", "model " + m.role, m.name);
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => choose({ kind: "model", name: m.name }));
+    const tag = el("span", "where" + (m.here ? " here" : ""), m.where);
+    tag.hidden = true;
+    row.append(b, tag);
+    m.e = b;
+    m.tag = tag;
+    modelBox.append(row);
+  });
+
+  const NS = "http://www.w3.org/2000/svg";
+  const links = [];
+  clips.forEach((c) => c.models.forEach((name) => {
+    const m = byName[name];
+    if (!m) return;
+    const p = document.createElementNS(NS, "path");
+    svg.append(p);
+    links.push({ c, m, p });
+  }));
+
+  const draw = () => {
+    const box = map.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + box.width + " " + box.height);
+    links.forEach((l) => {
+      const a = l.c.e.getBoundingClientRect(), b = l.m.e.getBoundingClientRect();
+      const x1 = a.right - box.left + 6, y1 = a.top + a.height / 2 - box.top;
+      const x2 = b.left - box.left - 6, y2 = b.top + b.height / 2 - box.top;
+      const mx = (x1 + x2) / 2;
+      l.p.setAttribute("d", "M" + x1 + " " + y1 + " C" + mx + " " + y1 + " " + mx + " " + y2 + " " + x2 + " " + y2);
+    });
+  };
+
+  const line = (m, text) => {
+    const li = el("li", m.role);
+    li.append(el("i"));
+    const body = el("div");
+    const name = el("button", "", m.name);
+    name.type = "button";
+    name.addEventListener("click", () => choose({ kind: "model", name: m.name }));
+    body.append(name, document.createElement("br"), el("span", "", text));
+    li.append(body);
+    return li;
+  };
+  const clipLine = (c) => {
+    const li = el("li", "think");
+    li.append(el("i"));
+    const body = el("div");
+    const name = el("button", "", c.label);
+    name.type = "button";
+    name.addEventListener("click", () => choose({ kind: "clip", chat: c.chat }));
+    body.append(name, document.createElement("br"), el("span", "", c.models.filter((n) => byName[n]).join(" · ")));
+    li.append(body);
+    return li;
+  };
+  const watch = (c) => {
+    const a = el("a", "go ghost", "Watch this take");
+    a.href = "https://youtu.be/" + D.video + "?t=" + Math.floor(c.start);
+    a.target = "_blank";
+    a.rel = "noopener";
+    return a;
+  };
+  const replay = (c) => {
+    const a = el("a", "go", c.pack ? "Open the replay" : "No replay for this one");
+    if (c.pack) { a.href = "replay/" + c.pack + "/"; a.target = "_blank"; a.rel = "noopener"; } else { a.setAttribute("aria-disabled", "true"); }
+    return a;
+  };
+
+  const showClip = (c) => {
+    card.append(el("h2", "", c.label));
+    card.append(el("p", "facts", c.name + " · the take is " + clock(c.end - c.start) + " long in the devlog, uncut"));
+    if (c.chat === STREAM.chat) {
+      const s = el("div", "stats");
+      [["By hand: watch it again", STREAM.hand], ["With Local Clip Studio", STREAM.studio], ["Cloud models cost", STREAM.cloud]].forEach(([k, v]) => {
+        const d = el("div", "stat");
+        d.append(el("small", "", k), el("b", "mono", v));
+        s.append(d);
+      });
+      card.append(s);
+      card.append(el("p", "cost", "Meta's cloud models saw only small pieces. The four-hour file stayed on this computer."));
+    }
+    const ul = el("ul", "does");
+    c.models.forEach((n) => { if (byName[n]) ul.append(line(byName[n], byName[n].does)); });
+    card.append(ul);
+    const cost = el("p", "cost");
+    cost.append("Cloud cost of this run: ", el("b", "", "Meta $" + c.meta_usd.toFixed(2)), ", ", el("b", "", "Baseten $" + c.baseten_usd.toFixed(2)));
+    if (c.models.indexOf("Muse Glimmer") >= 0) cost.append(". Muse Glimmer ran on this computer.");
+    else cost.append(".");
+    card.append(cost);
+    const acts = el("div", "acts");
+    acts.append(replay(c), watch(c));
+    card.append(acts);
+  };
+  const showModel = (m) => {
+    const used = clips.filter((c) => c.models.indexOf(m.name) >= 0);
+    card.append(el("h2", "", m.name));
+    card.append(el("p", "facts", { think: "Thinks", see: "Sees and hears", make: "Makes" }[m.role] + " · " + m.where + " · worked on " + used.length + " of " + clips.length + " videos"));
+    card.append(el("p", "cost", m.does));
+    const ul = el("ul", "does");
+    used.forEach((c) => ul.append(clipLine(c)));
+    card.append(ul);
+  };
+
+  const choose = (p) => {
+    pick = p;
+    const clip = p.kind === "clip" ? clips.find((c) => c.chat === p.chat) : null;
+    const model = p.kind === "model" ? byName[p.name] : null;
+    clips.forEach((c) => {
+      c.e.setAttribute("aria-pressed", String(c === clip));
+      c.e.classList.toggle("lit", !!model && c.models.indexOf(model.name) >= 0);
+    });
+    MODELS.forEach((m) => {
+      const on = clip ? clip.models.indexOf(m.name) >= 0 : m === model;
+      m.e.classList.toggle("lit", on);
+      m.e.setAttribute("aria-pressed", String(m === model));
+      m.tag.hidden = !(clip && on);
+    });
+    links.forEach((l) => {
+      const on = clip ? l.c === clip : l.m === model;
+      l.p.setAttribute("class", on ? "on " + l.m.role : "");
+      if (on) svg.append(l.p);
+    });
+    card.textContent = "";
+    if (clip) showClip(clip); else showModel(model);
+    history.replaceState(null, "", "#" + (clip ? "video=" + encodeURIComponent(clip.label) : "model=" + encodeURIComponent(model.name)));
+    draw();
+  };
+
+  const fromHash = () => {
+    const h = new URLSearchParams(location.hash.slice(1));
+    const v = clips.find((c) => c.label === h.get("video"));
+    if (v) return { kind: "clip", chat: v.chat };
+    if (byName[h.get("model")]) return { kind: "model", name: h.get("model") };
+    return pick;
+  };
+  choose(fromHash());
+  new ResizeObserver(draw).observe(map);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+})();
+</script>
+</body>
+</html>
