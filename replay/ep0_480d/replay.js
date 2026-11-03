@@ -7,7 +7,14 @@
   const TYPE_TICK = 50;
   const TYPE_HOLD = 1200;
   const realFetch = window.fetch.bind(window);
-  const data = realFetch("api/replay.json", { cache: "no-store" }).then((r) => r.json());
+  let frames = [];
+  const data = Promise.all([
+    realFetch("api/replay.json", { cache: "no-store" }).then((r) => r.json()),
+    realFetch("api/clipframe/frames.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+  ]).then(([d, f]) => {
+    frames = f;
+    return d;
+  });
   let skip = false;
   let playing = null;
   let want = null;
@@ -26,6 +33,54 @@
   }
 
   const answer = (body) => new Response(JSON.stringify(body), { headers: { "Content-Type": "application/json" } });
+
+  const shownAt = () => (playing && playing.events && playing.next > 0 ? playing.events[playing.next - 1].id : Infinity);
+  const framed = (url) => {
+    const text = String(url);
+    const at = text.indexOf("api/clipframe?");
+    if (at < 0 || !frames.length) return url;
+    const ask = {};
+    text.slice(at + 14).split("&").forEach((p) => {
+      const [k, v] = p.split("=");
+      ask[k] = decodeURIComponent(v || "");
+    });
+    const t = Number(ask.t) || 0;
+    const v = ask.v ? Number(ask.v) : shownAt();
+    const kin = frames.filter((f) => f[3] === (ask.look || "") && f[4] === (ask.layout || ""));
+    const sized = kin.filter((f) => f[2] === (Number(ask.width) || 0));
+    const pool = sized.length ? sized : kin;
+    const none = ask.layout ? "data:," : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+    if (!pool.length) return none;
+    const before = pool.filter((f) => f[0] <= v);
+    const best = (before.length ? before : pool).reduce((a, f) => {
+      const da = Math.abs(a[1] - t);
+      const df = Math.abs(f[1] - t);
+      if (df < da - 0.05) return f;
+      if (da < df - 0.05) return a;
+      return (before.length ? f[0] > a[0] : f[0] < a[0]) ? f : a;
+    });
+    return best[5] ? text.slice(0, at) + "api/clipframe/" + best[5] : none;
+  };
+  const src = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
+  Object.defineProperty(HTMLImageElement.prototype, "src", {
+    configurable: true,
+    enumerable: src.enumerable,
+    get() {
+      return src.get.call(this);
+    },
+    set(v) {
+      src.set.call(this, framed(v));
+    },
+  });
+  const restyle = (node) => {
+    if (node.nodeType !== 1) return;
+    [node, ...node.querySelectorAll("[style*='api/clipframe?']")].forEach((n) => {
+      const was = n.style ? n.style.backgroundImage : "";
+      if (was && was.includes("api/clipframe?")) n.style.backgroundImage = was.replace(/url\("([^"]*)"\)/g, (m, u) => "url(\"" + framed(u) + "\")");
+    });
+  };
+  new MutationObserver((list) => list.forEach((m) => (m.type === "attributes" ? restyle(m.target) : m.addedNodes.forEach(restyle))))
+    .observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
 
   window.fetch = async (url, opts) => {
     const at = new URL(String(url), location.href).pathname.split("/api/");
